@@ -8,7 +8,7 @@
 - [License](#license)
 
 ## Demo
-[Liquid7 Bootstrap gallery](http://jatazoulja.github.io/Liquid7)
+[Liquid7 Bootstrap gallery](http://jatazoulja.github.io/liquid7)
 
 ## Requirements
 This image gallery requires:
