@@ -18,4 +18,5 @@ This image gallery requires:
 	- touchSwipe
 
 ## documentation
+
 	
