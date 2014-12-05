@@ -279,8 +279,29 @@ textarea {
 
 
 
+
 /*** liquid-7 ***/
 #liquid-modal-gallery img {
 	max-width:100%;
 	max-height: 100%;
+}
+.list .list-container {
+    overflow-y:auto;
+    max-height:650px;
+}
+.list .list-container>div {
+    float:none;
+    width:100% !important;
+    padding:5px;
+    border-bottom:2px solid #deeded;
+}
+.list .list-container>div:hover {
+    cursor: pointer;
+    background:#fafafa;
+}
+.list .list-container>div>img {
+    border:none;
+}
+.list .preview-container img {
+    width:100%;
 }
