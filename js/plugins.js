@@ -16,8 +16,8 @@
             this.opts = opts;
             this.currentIndex = this.currentIndex || 0;
             this.modal = $(opts.modalContainer);
-            this._attachClick = function() {};
-            this._buildingGallery = function() {};
+            this._attachClick = opts.attachClick;
+            this._buildingGallery = opts.buildingGallery;
             /**
              * Create Toggler;
              */
@@ -220,6 +220,8 @@
             previewContainer: "#preview-container",
             gridClass: "col-lg-4 col-md-4 col-sm-4 col-xs-12",
             toggle: "#switcher",
+            buildingGallery: function() {},
+            attachClick: function() {},
             isContinousScrolling : true
         };
 
