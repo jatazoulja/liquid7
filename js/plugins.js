@@ -16,7 +16,8 @@
             this.opts = opts;
             this.currentIndex = this.currentIndex || 0;
             this.modal = $(opts.modalContainer);
-            
+            this._attachClick = function() {};
+            this._buildingGallery = function() {};
             /**
              * Create Toggler;
              */
@@ -36,7 +37,7 @@
 
                 container.toggleClass('list');
                 $(opts.previewContainer).toggleClass('hide');
-                $(opts.listContainer).toggleClass(opts.gridClass);
+                $(opts.previewContainer).toggleClass(opts.gridClass);
                 self.trigger('mode.' + newMode);
             });
             
@@ -98,7 +99,7 @@
                 if(this.mode === 'grid') $(this.opts.previewContainer).addClass('hide');
             }
             this._onClick = function(e) {
-                // this.attachClick.apply(arguments, this);
+                self._attachClick.apply(arguments, this);
                 var prevCont = $(self.opts.previewContainer);
 
                 this._checkMode();
@@ -131,7 +132,7 @@
             this._buildGallery = function() {
                 if (!this.data)
                     return;
-                // this.buildingGallery.apply(arguments, this);
+                this._buildingGallery.apply(arguments, this);
 
                 var content = _.template($(this.opts.template).html(), this.data[this.currentIndex]),
                     prevCont = $(self.opts.previewContainer);
@@ -172,11 +173,11 @@
 
             
             return {
-                buildingGallery : function() {
-
+                buildingGallery : function(callback) {
+                    self._buildingGallery = callback;
                 },
-                attachClick : function() {
-
+                attachClick : function(callback) {
+                    self._attachClick = callback;
                 },
                 next : function() {
                     self.trigger("liquid:next")
