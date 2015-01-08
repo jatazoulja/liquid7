@@ -1,4 +1,4 @@
-# Liquid7 Bootstrap gallery
+# Liquid7 Bootstrap Image gallery
 
 - [Demo](#demo)
 - [Requirements](#description)
