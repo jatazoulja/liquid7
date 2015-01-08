@@ -1,5 +1,5 @@
 // Avoid `console` errors in browsers that lack a console.
-( function(window, $, undefined) {"use strict";
+( function(window, $, undefined) {
 
         $.fn.Liquid7 = function(options) {
 
@@ -10,14 +10,14 @@
                 modal = _.pick(opts, 'backdrop', 'keyboard', 'show'), 
                 content = "", 
                 self = this,
-                IMG_WIDTH = 500;
+                IMG_WIDTH = 500,
+                priv = {};
 
             this.data = [];
             this.opts = opts;
             this.currentIndex = this.currentIndex || 0;
             this.modal = $(opts.modalContainer);
-            this._attachClick = opts.attachClick;
-            this._buildingGallery = opts.buildingGallery;
+
             /**
              * Create Toggler;
              */
@@ -40,30 +40,34 @@
                 $(opts.previewContainer).toggleClass(opts.gridClass);
                 self.trigger('mode.' + newMode);
             });
-            
-            this.nextSlide = function() {
-                if (!this.opts.isContinousScrolling)
+
+            priv.nextSlide = function() {
+                self.trigger('liquid:before[next]');
+                if (!self.opts.isContinousScrolling)
                     return;
-                if (this.currentIndex === this.data.length - 1) {
-                    this.currentIndex = 0;
+                if (self.currentIndex === self.data.length - 1) {
+                    self.currentIndex = 0;
                 } else {
-                    this.currentIndex = this.currentIndex + 1;
+                    self.currentIndex = self.currentIndex + 1;
                 }
-                this._buildGallery();
+                priv._buildGallery();
+                self.trigger('liquid:after[next]');
             };
-            this.prevSlide = function() {
-                if (!this.opts.isContinousScrolling)
+            priv.prevSlide = function() {
+                self.trigger('liquid:before[prev]');
+                if (!self.opts.isContinousScrolling)
                     return;
-                if (this.currentIndex === 0) {
-                    this.currentIndex = this.data.length - 1;
+                if (self.currentIndex === 0) {
+                    self.currentIndex = self.data.length - 1;
                 } else {
-                    this.currentIndex = this.currentIndex - 1;
+                    self.currentIndex = self.currentIndex - 1;
                 }
-                this._buildGallery();
+                priv._buildGallery();
+                self.trigger('liquid:after[prev]');
             };
-            this.swipe = {
+            priv.swipe = {
                 swipeStatus: function(event, phase, direction, distance, fingers) {
-                        console.log(phase);
+                    self.trigger('liquid:before[swipe]');
                     if (phase == "move" && (direction == "left" || direction == "right")) {
                         
                         if (direction == "left") {
@@ -82,42 +86,42 @@
                             return;
                         } 
                         if (direction == "right") {
-                            self.prevSlide()
+                            priv.prevSlide()
                         } else if (direction == "left") {
-                            self.nextSlide()
+                            priv.nextSlide()
                         }
                     }
-
+                    self.trigger('liquid:after[swipe]');
                 },
                 threshold : 100
             }
-            this._checkMode = function() {
+            priv._checkMode = function() {
                 var modeCont = $(self.opts.galleryContainer),
                     mode = modeCont.data('mode'),
                     mode = mode.split('|');
                 this.mode = mode[0];
-                if(this.mode === 'grid') $(this.opts.previewContainer).addClass('hide');
+                if(this.mode === 'grid') $(self.opts.previewContainer).addClass('hide');
             }
-            this._onClick = function(e) {
-                self._attachClick.apply(arguments, this);
+            priv._onClick = function(e) {
+                self.trigger('liquid:before[click]');
                 var prevCont = $(self.opts.previewContainer);
 
-                this._checkMode();
+                priv._checkMode();
                 this.currentIndex = $(e.currentTarget).parent().data('index');
 
-                this._buildGallery();
+                priv._buildGallery();
                 
-                if(this.mode !== "list" && !prevCont.is(":visible")) {
+                if(self.mode !== "list" && !prevCont.is(":visible")) {
                     this.modal.modal('show');
                 } else {
                     if(!prevCont.is(":visible")) {
                         this.modal.modal('show');
                     }
                 }
-            }; 
-            this._displayMode = function() {
+            };
+            priv._displayMode = function() {
                 var content = "";
-                this._checkMode();
+                priv._checkMode();
                                     
                 switch(this.mode) {
                     case "grid":
@@ -129,25 +133,26 @@
                         break;
                 }
             };
-            this._buildGallery = function() {
-                if (!this.data)
+            priv._buildGallery = function() {
+                if (!self.data)
                     return;
-                this._buildingGallery.apply(arguments, this);
+                self.trigger('liquid:before[build]');
 
-                var content = _.template($(this.opts.template).html(), this.data[this.currentIndex]),
+                var content = _.template($(self.opts.template).html(), self.data[self.currentIndex]),
                     prevCont = $(self.opts.previewContainer);
                 if(this.mode === "list") {
                     prevCont.html(content);
                      if(!prevCont.is(":visible")) {
-                        this.modal.html(content);
+                         self.modal.html(content);
                         // initiate the modal
-                        this.modal.modal(modal);                         
+                         self.modal.modal(modal);
                      }
                 } else {
-                    this.modal.html(content);
+                    self.modal.html(content);
                     // initiate the modal
-                    this.modal.modal(modal);
+                    self.modal.modal(modal);
                 }
+                self.trigger('liquid:after[build]');
 
             };
             // Initiate the gallery data;
@@ -163,41 +168,31 @@
                 $(obj).data('index', index);
             }, this);
 
-            $(opts.imageContainer).off("click", 'img').on("click", 'img', $.proxy(this._onClick, this))
+            $(opts.imageContainer).off("click", 'img').on("click", 'img', $.proxy(priv._onClick, this))
 
-            $(opts.modalContainer).swipe(this.swipe);
+            $(opts.modalContainer).swipe(priv.swipe);
+
+            priv._displayMode();
             
-            this._displayMode();
-            
-            this.on('mode.list', $.proxy(this._displayMode, this));
+            this.on('mode.list', $.proxy(priv._displayMode, this));
 
             
-            return {
-                buildingGallery : function(callback) {
-                    self._buildingGallery = callback;
-                },
-                attachClick : function(callback) {
-                    self._attachClick = callback;
-                },
+            return $.extend({}, this, {
                 next : function() {
-                    self.trigger("liquid:next")
-                    self.nextSlide();
+                    priv.nextSlide();
                 },
                 prev : function() {
-                    self.trigger("liquid:prev")
-                    self.prevSlide();
+                    priv.prevSlide();
                 },
                 close : function() {
-                    self.trigger("liquid:closing")
                     self.modal.modal('hide');
-                    self.trigger("liquid:closed")
                 },
                 open : function() {
-                    self.trigger("liquid:opening")
+                    self.trigger("liquid:opening");
                     self.modal.modal('show');
-                    self.trigger("liquid:opened")
+                    self.trigger("liquid:opened");
                 }
-            }
+            });
         };
         /*
         $.fn.Liquid7.extends({
@@ -220,8 +215,6 @@
             previewContainer: "#preview-container",
             gridClass: "col-lg-4 col-md-4 col-sm-4 col-xs-12",
             toggle: "#switcher",
-            buildingGallery: function() {},
-            attachClick: function() {},
             isContinousScrolling : true
         };
 
