@@ -37,7 +37,7 @@
 
                 container.toggleClass('list');
                 $(opts.previewContainer).toggleClass('hide');
-                $(opts.previewContainer).toggleClass(opts.gridClass);
+                $(opts.listContainer).toggleClass(opts.gridClass);
                 self.trigger('mode.' + newMode);
             });
 
@@ -219,5 +219,12 @@
         };
 
     }(window, jQuery));
-
+/**
+ | Name                 | parameters | Description  |
+ |----------------------+------------+--------------|
+ | next                 | None       | Next Slide  |
+ | prev                 | None       | Previous Slide  |
+ | open                 | None       | open gallery  |
+ | close                | None       | close gallery  |
+ */
 // Place any jQuery/helper plugins in here.

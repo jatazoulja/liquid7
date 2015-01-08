@@ -165,9 +165,15 @@
         <script src="js/main.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
-				window.liquid = new $('#liquid-modal-gallery').Liquid7();
+                window.liquid = new $('#liquid-modal-gallery').Liquid7({
+                    template : '#gallery-template', // templatecontainer
+                    modalContainer : '#liquid-modal-gallery', // containers of the modal
+                    galleryContainer : '#liquid-gallery', // containst the set of images
+                    imageContainer : '.thumb-container'
+                });
 
-			})
+
+            })
 		</script>
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     </body>
